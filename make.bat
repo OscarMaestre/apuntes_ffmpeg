@@ -1,0 +1,2 @@
+pandoc README.md -f markdown -t docx -o descargas/Tutorial_ffmpeg.docx -V lang=es-ES
+pandoc README.md -f markdown -t odt -o descargas/Tutorial_ffmpeg.odt -V lang=es-ES
