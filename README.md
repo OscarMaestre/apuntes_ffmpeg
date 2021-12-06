@@ -110,3 +110,79 @@ Deberíamos ver algo como esto::
     Stream #0:10(rus): Subtitle: subrip
     Stream #0:11(vie): Subtitle: subrip
 
+¿Como se interpreta esto? Bien, ``ffmpeg`` ha recibido un fichero de entrada, al que ha denominado ``Input #0`` (cabe destacar que ``ffmpeg`` puede aceptar varios ficheros de entrada para por ejemplo tomar el vídeo del fichero 0 y el audio del fichero 1). Dentro de ``Input #0`` encontramos lo siguiente:
+
+* Metadatos.
+* Duración del fichero.
+* Información sobre capítulos: para cada uno de ellos podemos ver su número y donde empiezan y acaban. Observar que aparecen indicados como ``Chapter #0:4`` lo que significa *capítulo 4 del fichero de entrada 0*
+* Hay un flujo con el número 0, que es de vídeo, codificado con el códec h264.
+* Hay un flujo con el número 1, que es de audio, codificado con el códec ac3.
+* Hay varios flujos de subtítulos, con números entre el 2 y el 11, en los que se ha indicado el idioma de escritura.
+
+Conversiones básicas
+----------------------
+
+Si solo queremos convertir un fichero que usa un formato de contenedor en otro distinto, el proceso es simple. Por ejemplo, para convertir nuestro fichero a otro que utilice AVI como contenedor solo tendremos que escribir esto::
+
+    ffmpeg -i Sintel.2010.1080p.mkv Sintel.avi
+
+Este comando toma un fichero de entrada (opción ``-i``) y genera un fichero de salida (con el nombre que escribamos al final). Una vez lanzado el comando, ``ffmpeg`` mostrará información sobre los ficheros de entrada y despues  empezará a realizar la conversión. En general **convertir vídeo es un proceso muy lento que se ve muy influido por la potencia del microprocesador del que se disponga**. Pasado un tiempo tendremos ambos ficheros y podremos abrirlos con cualquier reproductor multimedia. 
+
+Despues de obtener nuestro archivo AVI podemos examinarlo con este comando::
+
+    ffmpeg -i Sintel.avi
+
+Y podremos ver algo como esto::
+
+    Input #0, avi, from 'Sintel.avi':
+    Metadata:
+        software        : Lavf59.9.102
+    Duration: 00:14:48.07, start: 0.000000, bitrate: 1732 kb/s
+    Stream #0:0: Video: mpeg4 (Simple Profile) (FMP4 / 0x34504D46), yuv420p, 1920x818 [SAR 1:1 DAR 960:409], 1592 kb/s, 24 fps, 24 tbr, 24 tbn
+    Stream #0:1: Audio: mp3 (U[0][0][0] / 0x0055), 48000 Hz, stereo, fltp, 128 kb/s
+        Metadata:
+        title           : AC3 5.1 @ 640 Kbps
+
+
+Como vemos, ha habido algunos cambios:
+
+* El flujo original de vídeo estaba codificado con el códec h264. En el fichero final está codificado con mpg4.
+* El audio original estaba codificado con ac3. El final lo está en mp3.
+
+¿A qué se debe esto? Muy sencillo, ``ffmpeg`` tiene sus propios códecs por defecto, así que si no indicamos nada, **convertirá los flujos originales a los formatos por defecto, lo que puede ser bastante lento**
+
+Códecs
+--------------
+
+Un códec es un **CO**dificador-**DEC**odificador (en realidad en español se dice "descodificador") de audio o de vídeo. Codificar algo consiste en tomar los datos originales y transformarlos en otra secuencia de datos distinta y descodificar implica tomar la secuencia de datos transformada y recuperar los datos originales. Como en muchos casos interesa reducir el tamaño de los datos muchos códec tienen la capacidad de comprimir. Además, en algunos casos, la compresión puede ser mejor si aceptamos cierta pérdida de calidad se puede decir que hay "compresión con pérdida" y "compresión sin pérdida".
+
+Ocurre también que hay literalmente cientos de mecanismos para hacer esta tarea y en ocasiones podremos observar que algunos ficheros han sido codificados con un códec que nuestro programa, nuestro móvil o nuestra TV no tiene lo que daría lugar a que **no se pueda ver u oír (o ambos) el fichero**. En estos casos nos interesará **"transcodificar"** uno o varios flujos del fichero.
+
+Volvamos a ver qué códecs había usado ``ffmpeg`` en nuestro fichero::
+
+    Input #0, avi, from 'Sintel.avi':
+    Metadata:
+        software        : Lavf59.9.102
+    Duration: 00:14:48.07, start: 0.000000, bitrate: 1732 kb/s
+    Stream #0:0: Video: mpeg4 (Simple Profile) (FMP4 / 0x34504D46), yuv420p, 1920x818 [SAR 1:1 DAR 960:409], 1592 kb/s, 24 fps, 24 tbr, 24 tbn
+    Stream #0:1: Audio: mp3 (U[0][0][0] / 0x0055), 48000 Hz, stereo, fltp, 128 kb/s
+        Metadata:
+        title           : AC3 5.1 @ 640 Kbps
+
+
+Como vemos, ``ffmpeg`` ha recodificado el vídeo y lo ha pasado de "h264" a "mpeg4" y ha recodificado el audio de "ac3" a "mp3". Si deseamos usar un codec de audio o de vídeo concreto podemos pedirle a ``ffmpeg`` que lo utilice usando las opciones ``-acodec <codec_de_audio>`` o ``-vcodec <codec_de_video>``
+
+Podemos ver la lista de codecs de ``ffmpeg`` usando esto::
+
+    ffmpeg -codecs
+
+Lo que nos mostrará una lista (muy muy larga) de todos los codec que el programa maneja. Al comienzo de la lista veremos algo como esto, que nos explica lo que significa la información que vemos (incluimos una traducción del significado)::
+
+    V..... = Video (el códec se usa para codificar/descodificar vídeo)
+    A..... = Audio (el códec se usa para codificar/descodificar audio)
+    S..... = Subtitle (el códec se usa para codificar/descodificar subtítulos)
+    .F.... = Frame-level multithreading (los fotogramas se pueden procesar en paralelo)
+    ..S... = Slice-level multithreading (se pueden procesar en paralelo trozos de un fotograma)
+    ...X.. = Codec is experimental (no requiere traducción)
+    ....B. = Supports draw_horiz_band (el codec acepta técnicas que mejoran la eficiencia de caché)
+    .....D = Supports direct rendering method 1 (el codec acepta la aceleración hardware)
