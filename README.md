@@ -1,3 +1,9 @@
+---
+title: Tutorial de uso de ffmpeg
+author: Oscar G.G
+date: Diciembre de 2021
+---
+
 Tutorial de uso de ``ffmpeg``
 ==============================
 
@@ -38,9 +44,23 @@ Una vez descargados ambos archivos, el ejecutable y el vídeo, pondremos ambos f
 
     ffmpeg
 
-Deberíamos ver algo como esto:
+Deberíamos ver algo como esto::
 
-![Ejecución de ffmpeg](img/01-ejecucion-ffmpeg.png)
+    ffmpeg version N-104766-g3a9861e22c-20211205 Copyright (c) 2000-2021 the FFmpeg developers
+    built with gcc 10-win32 (GCC) 20210610
+    configuration: --prefix=/ffbuild/prefix --pkg-config-flags=--static --pkg-config=pkg-config --cross-prefix=x86_64-w64-mingw32- --arch=x86_64 --target-os=mingw32 --enable-gpl --enable-version3 --disable-debug --disable-w32threads --enable-pthreads --enable-iconv --enable-libxml2 --enable-zlib --enable-libfreetype --enable-libfribidi --enable-gmp --enable-lzma --enable-fontconfig --enable-libvorbis --enable-opencl --enable-libvmaf --disable-libxcb --disable-xlib --enable-amf --enable-libaom --enable-avisynth --enable-libdav1d --enable-libdavs2 --disable-libfdk-aac --enable-ffnvcodec --enable-cuda-llvm --enable-frei0r --enable-libgme --enable-libass --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librist --enable-libtheora --enable-libvpx --enable-libwebp --enable-lv2 --enable-libmfx --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenh264 --enable-libopenjpeg --enable-librav1e --enable-librubberband --enable-schannel --enable-sdl2 --enable-libsoxr --enable-libsrt --enable-libsvtav1 --enable-libtwolame --enable-libuavs3d --disable-libdrm --disable-vaapi --enable-libvidstab --enable-vulkan --enable-libglslang --enable-libplacebo --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxvid --enable-libzimg --enable-libzvbi --extra-cflags=-DLIBTWOLAME_STATIC --extra-cxxflags= --extra-ldflags=-pthread --extra-ldexeflags= --extra-libs=-lgomp --extra-version=20211205
+    libavutil      57. 10.101 / 57. 10.101
+    libavcodec     59. 14.100 / 59. 14.100
+    libavformat    59.  9.102 / 59.  9.102
+    libavdevice    59.  0.101 / 59.  0.101
+    libavfilter     8. 19.100 /  8. 19.100
+    libswscale      6.  1.101 /  6.  1.101
+    libswresample   4.  0.100 /  4.  0.100
+    libpostproc    56.  0.100 / 56.  0.100
+    Hyper fast Audio and Video encoder
+    usage: ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
+
+    Use -h to get full help or, even better, run 'man ffmpeg'
 
 
 Si no vemos algo similar a lo anterior deberemos investigar cual es el problema, que probablemente sea alguno de estos:
@@ -278,5 +298,12 @@ Como vemos, el audio está en formato ac3. Si deseásemos extraer el audio de es
 1. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.mp3``
 2. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.ac3``
 3. ``ffmpeg -i Sintel.2010.1080p.mkv -acodec copy AudioSintel.ac3``
+
+
+¿Qué harán estos comandos?
+
+1. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.mp3`` extrae el audio de la película y lo guarda en mp3. Sin embargo, como el audio original de la película está en ac3 **habrá una recodificación**. 
+2. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.ac3`` hace lo mismo, pero ``ffmpeg`` puede deducir viendo la extension ``.ac3`` que se desea guardar en ese formato. En realidad el  audio original estaba en ese formato sin embargo al no especificar el codec ``ffmpeg`` extrae el audio y lo recodifica, lo que es mas lento que el comando siguiente.
+3. ``ffmpeg -i Sintel.2010.1080p.mkv -acodec copy AudioSintel.ac3`` extrae el audio y recalca que no queremos usar ningún codec, sino que queremos usar exactamente el mismo con el que se codificó el audio en la película. Esto hará la extracción del audio mucho más rápida.
 
 
