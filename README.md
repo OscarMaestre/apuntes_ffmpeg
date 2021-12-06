@@ -36,3 +36,7 @@ Una vez descargados ambos archivos, el ejecutable y el vídeo, pondremos ambos f
 
     ffmpeg
 
+Deberíamos ver algo como esto:
+
+![Tux, the Linux mascot](img/01-ejecucion-ffmpeg.png)
+
