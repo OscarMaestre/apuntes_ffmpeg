@@ -216,3 +216,67 @@ Veremos que el resultado es este::
     Duration: 00:14:48.03, start: 0.000000, bitrate: 2242 kb/s
     Stream #0:0: Video: mpeg4 (Simple Profile) (FMP4 / 0x34504D46), yuv420p, 1920x818 [SAR 1:1 DAR 960:409], 1592 kb/s, 24 fps, 24 tbr, 24 tbn
     Stream #0:1: Audio: ac3 ([0] [0][0] / 0x2000), 48000 Hz, 5.1(side), fltp, 640 kb/s
+
+Como puede observarse, los subtítulos también se pierden. ¿La razón? la misma de antes, AVI no ofrece soporte directo a los subtítulos, así que simplemente desaparecen.
+
+Extrayendo audio
+--------------------
+
+Recordemos que pasa cuando examinamos nuestro fichero original::
+
+    ffmpeg -i Sintel.2010.1080p.mkv
+
+Obteníamos esto::
+
+    Input #0, matroska,webm, from 'Sintel.2010.1080p.mkv':
+    Metadata:
+        encoder         : libebml v1.0.0 + libmatroska v1.0.0
+        creation_time   : 2011-04-25T12:57:46.000000Z
+    Duration: 00:14:48.03, start: 0.000000, bitrate: 10562 kb/s
+    Chapters:
+        Chapter #0:0: start 0.000000, end 103.125000
+        Metadata:
+            title           : Chapter 01
+        Chapter #0:1: start 103.125000, end 148.667000
+        Metadata:
+            title           : Chapter 02
+        Chapter #0:2: start 148.667000, end 349.792000
+        Metadata:
+            title           : Chapter 03
+        Chapter #0:3: start 349.792000, end 437.208000
+        Metadata:
+            title           : Chapter 04
+        Chapter #0:4: start 437.208000, end 472.075000
+        Metadata:
+            title           : Chapter 05
+        Chapter #0:5: start 472.075000, end 678.833000
+        Metadata:
+            title           : Chapter 06
+        Chapter #0:6: start 678.833000, end 744.083000
+        Metadata:
+            title           : Chapter 07
+        Chapter #0:7: start 744.083000, end 888.032000
+        Metadata:
+            title           : Chapter 08
+    Stream #0:0(eng): Video: h264 (High), yuv420p(tv, bt709/unknown/unknown, progressive), 1920x818, SAR 1:1 DAR 960:409, 24 fps, 24 tbr, 1k tbn
+    Stream #0:1(eng): Audio: ac3, 48000 Hz, 5.1(side), fltp, 640 kb/s
+        Metadata:
+        title           : AC3 5.1 @ 640 Kbps
+    Stream #0:2(ger): Subtitle: subrip
+    Stream #0:3(eng): Subtitle: subrip
+    Stream #0:4(spa): Subtitle: subrip
+    Stream #0:5(fre): Subtitle: subrip
+    Stream #0:6(ita): Subtitle: subrip
+    Stream #0:7(dut): Subtitle: subrip
+    Stream #0:8(pol): Subtitle: subrip
+    Stream #0:9(por): Subtitle: subrip
+    Stream #0:10(rus): Subtitle: subrip
+    Stream #0:11(vie): Subtitle: subrip
+
+Como vemos, el audio está en formato ac3. Si deseásemos extraer el audio de esta película podríamos hacer esto:
+
+1. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.mp3``
+2. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.ac3``
+3. ``ffmpeg -i Sintel.2010.1080p.mkv -acodec copy AudioSintel.ac3``
+
+
