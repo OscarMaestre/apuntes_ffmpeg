@@ -186,3 +186,33 @@ Lo que nos mostrará una lista (muy muy larga) de todos los codec que el program
     ...X.. = Codec is experimental (no requiere traducción)
     ....B. = Supports draw_horiz_band (el codec acepta técnicas que mejoran la eficiencia de caché)
     .....D = Supports direct rendering method 1 (el codec acepta la aceleración hardware)
+
+Cada codec tiene sus ventajas e inconvenientes. Si no se sabe muy bien cual usar una buena elección es usar "h264" para vídeo y "mp3" para audio. Al ser tan extendidos es más probable que el fichero generado con estos códecs pueda verse y oírse bien en casi cualquier dispositivo.
+
+Volviendo a nuestro ejemplo, podría ocurrir que el fichero original ``Sintel.2010.1080p.mkv`` utilizase codecs correctos y solamente hubiésemos querido modificar el contenedor. Recordemos que nuestro ejemplo anterior ``ffmpeg -i Sintel.2010.1080p.mkv Sintel.avi`` produjo una transcodificación tanto del audio como del vídeo que conllevó bastante tiempo. 
+
+Por tanto, para simplemente cambiar de formato de contenedor podemos usar esto (suele ser recomendable indicar en el nombre de fichero los códecs utilizados)::
+
+    ffmpeg -i Sintel.2010.1080p.mkv -acodec copy -vcodec copy Sintel-h264-ac3.avi
+
+Sin embargo obtendremos un error como este::
+
+    H.264 bitstream malformed, no startcode found, use the video bitstream filter 'h264_mp4toannexb' to fix it ('-bsf:v h264_mp4toannexb' option with ffmpeg)
+    av_interleaved_write_frame(): Invalid data found when processing input
+
+Bien, aunque la idea era buena, aprendemos que **no todos los contenedores aceptan directamente todas las posibilidades**. En concreto, ocurre que AVI es un formato de contenedor que se diseñó antes que h264 y AVI no ofrece soporte directo al sistema de codificación que proporciona h264 por lo que usaremos el mismo codec de video que usó ``ffmpeg`` en la primera conversión y dejaremos el códec de audio en ac3::
+
+    ffmpeg -i Sintel.2010.1080p.mkv -acodec copy -vcodec mpeg4 Sintel-mpeg4-ac3.avi
+
+Ahora la conversión sí se producirá y será más rápida que la realizada inicialmente (que recordemos convirtió el vídeo de h264 a mpeg4 el audio de ac3 a mp3). Si consultamos los códecs usados en el fichero final con esto::
+
+    ffmpeg -i Sintel-mpeg4-ac3.avi
+
+Veremos que el resultado es este::
+
+    Input #0, avi, from 'Sintel-mpeg4-ac3.avi':
+    Metadata:
+        software        : Lavf59.9.102
+    Duration: 00:14:48.03, start: 0.000000, bitrate: 2242 kb/s
+    Stream #0:0: Video: mpeg4 (Simple Profile) (FMP4 / 0x34504D46), yuv420p, 1920x818 [SAR 1:1 DAR 960:409], 1592 kb/s, 24 fps, 24 tbr, 24 tbn
+    Stream #0:1: Audio: ac3 ([0] [0][0] / 0x2000), 48000 Hz, 5.1(side), fltp, 640 kb/s
