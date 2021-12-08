@@ -331,7 +331,7 @@ Usando ``ffmpeg`` podemos modificar el tamaño del vídeo usando una herramienta
 Pasado un rato, ``ffmpeg`` habrá modificado el tamaño del vídeo y ahora tendrá la resolución indicada. Podemos comprobarlo con esto:
 
 
-    ffmpeg -i Sintel.2010.1080p.mkv -vf scale=1280:720 -acodec copy Sintel.HD.mkv
+    ffmpeg -i Sintel.HD.mkv
 
 Y veremos que efectivamente la nueva resolución es de 1280x720:
 
@@ -372,3 +372,36 @@ Durante mucho tiempo, las TV normales tenían una proporción de 4:3. Es decir, 
 
 Los problemas con el escalado
 --------------------------------
+
+Si nuestra película original tenía una resolución de 1920x818 despues tiene una resolución de 1280x720 entonces **hemos cambiado la proporción de la película**. Efectivamente, la *aspect ratio* antes era de 2.35:1 (que sale de dividir 1920/818) y despues es de 1.77:1 (o lo que es lo mismo de 16:9). No siempre se nota, así que haremos un nuevo reescalado y modificaremos mucho el tamaño original y lo dejaremos por ejemplo en 8:1 (por ejemplo usando una resolución final de 800x100):
+
+    ffmpeg -i Sintel.2010.1080p.mkv -vf scale=800:100 -acodec copy Sintel-800x100.mkv
+
+Observaremos que la película ha perdido demasiada calidad con respecto al original. De hecho, es muy posible que se aprecie el pixelado al haber modificado demasiado la resolución vertical.
+
+
+Una equivocación común es hacer lo siguiente:
+
+    ffmpeg -i Sintel.2010.1080p.mkv -vf scale=7680:4320 -acodec copy Sintel-UHD.mkv
+
+
+El error es que nuestra película tiene una resolución de 1920x818 pero *no podemos ampliarla a una resolución mayor.* El programa puede modificar el tamaño del vídeo original pero básicamente **le estamos pidiendo que se invente píxeles.** El archivo final tendrá la anchura y altura pedidos pero muy seguramente no la calidad esperada.
+
+
+Segmentos de tiempo
+-----------------------------
+
+Es posible cortar un trozo de vídeo usando la línea de comandos. Para ello se deben tener en cuenta tres cosas:
+
+* Los indicadores de tiempo deben escribirse SIEMPRE ANTES del fichero de entrada.
+* Para indicar el punto de comienzo se usa algo como ``-ss 1:21:38.300`` que significa comenzar a cortar a partir de la hora 1, 21 minutos, 38 segundos con 300 centésimas. Si no indicamos nada más el programa cortará desde ese punto hasta el final.
+* Se puede indicar un punto de final usando ``-to 1:23:41.200`` que en este caso indicaría llegar hasta 1 hora, 23 minutos, 41 segundos con 200 centésimas.
+
+Probemos a extraer un trozo de vídeo entre dos tramos de tiempo:
+
+    ffmpeg -ss 0:02:00 -to 0:03:30 -i Sintel.2010.1080p.mkv -acodec copy -vcodec copy Sintel-segmento.mkv
+
+Esto cortará el vídeo empezando en el minuto 2 y llegando exactamente hasta el minuto 3:30, es decir, que el vídeo final durará 1 minuto y 30 segundos.
+
+
+En ocasiones, el vídeo tendrá la duración correcta pero algunos programas de reproducción y/o televisiones informarán de una duración equivocada. Esto se debe a que algunos vídeos (como el que estamos usando de ejemplo) **incluyen información sobre capítulos y/o subtítulos** que al ser incluidos en el fichero final "confunden" al reproductor. El problema se debe a que el flujo de vídeo tiene una duración pero el flujo de subtítulos tiene una distinta. Esto puede ser difícil de resolver y el propio software indica que no hay una solución factible, ya que se depende de demasiadas variables.
