@@ -40,11 +40,11 @@ Para todo el tutorial vamos a necesitar dos cosas: ``ffmpeg`` y algún archivo d
 3. Algún archivo de audio. En el mismo sitio web de Sintel podemos descargar la banda sonora de la película con el nombre ``sintel-m+e.flac``.
 4. Un archivo de subtítulos. Sintel también incluye diversos archivos de subtítulos de los cuales descargaremos por ejemplo la versión en español. Dicho archivo se llama ``sintel_es.srt``. En realidad la película descargada *ya incluye los subtítulos* pero nos vendran bien el tenerlos por separado para practicar algunas operaciones.
 
-Una vez descargados ambos archivos, el ejecutable y el vídeo, pondremos ambos ficheros en el mismo directorio, abriremos el símbolo del sistema (o una consola en el caso de GNU/Linux) y teclearemos::
+Una vez descargados ambos archivos, el ejecutable y el vídeo, pondremos ambos ficheros en el mismo directorio, abriremos el símbolo del sistema (o una consola en el caso de GNU/Linux) y teclearemos:
 
     ffmpeg
 
-Deberíamos ver algo como esto::
+Deberíamos ver algo como esto:
 
     ffmpeg version N-104766-g3a9861e22c-20211205 Copyright (c) 2000-2021 the FFmpeg developers
     built with gcc 10-win32 (GCC) 20210610
@@ -78,12 +78,12 @@ Aunque ``ffmpeg`` es muy potente, la mayor parte del tiempo solo necesitaremos u
 Obtención de información
 ---------------------------
 
-El archivo de vídeo que hemos descargado se llama ``Sintel.2010.1080p.mkv``. Para obtener información sobre él basta con ejecutar::
+El archivo de vídeo que hemos descargado se llama ``Sintel.2010.1080p.mkv``. Para obtener información sobre él basta con ejecutar:
 
     ffmpeg Sintel.2010.1080p.mkv
 
 
-Deberíamos ver algo como esto::
+Deberíamos ver algo como esto:
 
     Input #0, matroska,webm, from 'Sintel.2010.1080p.mkv':
     Metadata:
@@ -142,17 +142,17 @@ Deberíamos ver algo como esto::
 Conversiones básicas
 ----------------------
 
-Si solo queremos convertir un fichero que usa un formato de contenedor en otro distinto, el proceso es simple. Por ejemplo, para convertir nuestro fichero a otro que utilice AVI como contenedor solo tendremos que escribir esto::
+Si solo queremos convertir un fichero que usa un formato de contenedor en otro distinto, el proceso es simple. Por ejemplo, para convertir nuestro fichero a otro que utilice AVI como contenedor solo tendremos que escribir esto:
 
     ffmpeg -i Sintel.2010.1080p.mkv Sintel.avi
 
 Este comando toma un fichero de entrada (opción ``-i``) y genera un fichero de salida (con el nombre que escribamos al final). Una vez lanzado el comando, ``ffmpeg`` mostrará información sobre los ficheros de entrada y despues  empezará a realizar la conversión. En general **convertir vídeo es un proceso muy lento que se ve muy influido por la potencia del microprocesador del que se disponga**. Pasado un tiempo tendremos ambos ficheros y podremos abrirlos con cualquier reproductor multimedia. 
 
-Despues de obtener nuestro archivo AVI podemos examinarlo con este comando::
+Despues de obtener nuestro archivo AVI podemos examinarlo con este comando:
 
     ffmpeg -i Sintel.avi
 
-Y podremos ver algo como esto::
+Y podremos ver algo como esto:
 
     Input #0, avi, from 'Sintel.avi':
     Metadata:
@@ -178,7 +178,7 @@ Un códec es un **CO**dificador-**DEC**odificador (en realidad en español se di
 
 Ocurre también que hay literalmente cientos de mecanismos para hacer esta tarea y en ocasiones podremos observar que algunos ficheros han sido codificados con un códec que nuestro programa, nuestro móvil o nuestra TV no tiene lo que daría lugar a que **no se pueda ver u oír (o ambos) el fichero**. En estos casos nos interesará **"transcodificar"** uno o varios flujos del fichero.
 
-Volvamos a ver qué códecs había usado ``ffmpeg`` en nuestro fichero::
+Volvamos a ver qué códecs había usado ``ffmpeg`` en nuestro fichero:
 
     Input #0, avi, from 'Sintel.avi':
     Metadata:
@@ -192,11 +192,11 @@ Volvamos a ver qué códecs había usado ``ffmpeg`` en nuestro fichero::
 
 Como vemos, ``ffmpeg`` ha recodificado el vídeo y lo ha pasado de "h264" a "mpeg4" y ha recodificado el audio de "ac3" a "mp3". Si deseamos usar un codec de audio o de vídeo concreto podemos pedirle a ``ffmpeg`` que lo utilice usando las opciones ``-acodec <codec_de_audio>`` o ``-vcodec <codec_de_video>``
 
-Podemos ver la lista de codecs de ``ffmpeg`` usando esto::
+Podemos ver la lista de codecs de ``ffmpeg`` usando esto:
 
     ffmpeg -codecs
 
-Lo que nos mostrará una lista (muy muy larga) de todos los codec que el programa maneja. Al comienzo de la lista veremos algo como esto, que nos explica lo que significa la información que vemos (incluimos una traducción del significado)::
+Lo que nos mostrará una lista (muy muy larga) de todos los codec que el programa maneja. Al comienzo de la lista veremos algo como esto, que nos explica lo que significa la información que vemos (incluimos una traducción del significado):
 
     V..... = Video (el códec se usa para codificar/descodificar vídeo)
     A..... = Audio (el códec se usa para codificar/descodificar audio)
@@ -211,24 +211,24 @@ Cada codec tiene sus ventajas e inconvenientes. Si no se sabe muy bien cual usar
 
 Volviendo a nuestro ejemplo, podría ocurrir que el fichero original ``Sintel.2010.1080p.mkv`` utilizase codecs correctos y solamente hubiésemos querido modificar el contenedor. Recordemos que nuestro ejemplo anterior ``ffmpeg -i Sintel.2010.1080p.mkv Sintel.avi`` produjo una transcodificación tanto del audio como del vídeo que conllevó bastante tiempo. 
 
-Por tanto, para simplemente cambiar de formato de contenedor podemos usar esto (suele ser recomendable indicar en el nombre de fichero los códecs utilizados)::
+Por tanto, para simplemente cambiar de formato de contenedor podemos usar esto (suele ser recomendable indicar en el nombre de fichero los códecs utilizados):
 
     ffmpeg -i Sintel.2010.1080p.mkv -acodec copy -vcodec copy Sintel-h264-ac3.avi
 
-Sin embargo obtendremos un error como este::
+Sin embargo obtendremos un error como este:
 
     H.264 bitstream malformed, no startcode found, use the video bitstream filter 'h264_mp4toannexb' to fix it ('-bsf:v h264_mp4toannexb' option with ffmpeg)
     av_interleaved_write_frame(): Invalid data found when processing input
 
-Bien, aunque la idea era buena, aprendemos que **no todos los contenedores aceptan directamente todas las posibilidades**. En concreto, ocurre que AVI es un formato de contenedor que se diseñó antes que h264 y AVI no ofrece soporte directo al sistema de codificación que proporciona h264 por lo que usaremos el mismo codec de video que usó ``ffmpeg`` en la primera conversión y dejaremos el códec de audio en ac3::
+Bien, aunque la idea era buena, aprendemos que **no todos los contenedores aceptan directamente todas las posibilidades**. En concreto, ocurre que AVI es un formato de contenedor que se diseñó antes que h264 y AVI no ofrece soporte directo al sistema de codificación que proporciona h264 por lo que usaremos el mismo codec de video que usó ``ffmpeg`` en la primera conversión y dejaremos el códec de audio en ac3:
 
     ffmpeg -i Sintel.2010.1080p.mkv -acodec copy -vcodec mpeg4 Sintel-mpeg4-ac3.avi
 
-Ahora la conversión sí se producirá y será más rápida que la realizada inicialmente (que recordemos convirtió el vídeo de h264 a mpeg4 el audio de ac3 a mp3). Si consultamos los códecs usados en el fichero final con esto::
+Ahora la conversión sí se producirá y será más rápida que la realizada inicialmente (que recordemos convirtió el vídeo de h264 a mpeg4 el audio de ac3 a mp3). Si consultamos los códecs usados en el fichero final con esto:
 
     ffmpeg -i Sintel-mpeg4-ac3.avi
 
-Veremos que el resultado es este::
+Veremos que el resultado es este:
 
     Input #0, avi, from 'Sintel-mpeg4-ac3.avi':
     Metadata:
@@ -242,11 +242,11 @@ Como puede observarse, los subtítulos también se pierden. ¿La razón? la mism
 Extrayendo audio
 --------------------
 
-Recordemos que pasa cuando examinamos nuestro fichero original::
+Recordemos que pasa cuando examinamos nuestro fichero original:
 
     ffmpeg -i Sintel.2010.1080p.mkv
 
-Obteníamos esto::
+Obteníamos esto:
 
     Input #0, matroska,webm, from 'Sintel.2010.1080p.mkv':
     Metadata:
@@ -306,4 +306,69 @@ Como vemos, el audio está en formato ac3. Si deseásemos extraer el audio de es
 2. ``ffmpeg -i Sintel.2010.1080p.mkv AudioSintel.ac3`` hace lo mismo, pero ``ffmpeg`` puede deducir viendo la extension ``.ac3`` que se desea guardar en ese formato. En realidad el  audio original estaba en ese formato sin embargo al no especificar el codec ``ffmpeg`` extrae el audio y lo recodifica, lo que es mas lento que el comando siguiente.
 3. ``ffmpeg -i Sintel.2010.1080p.mkv -acodec copy AudioSintel.ac3`` extrae el audio y recalca que no queremos usar ningún codec, sino que queremos usar exactamente el mismo con el que se codificó el audio en la película. Esto hará la extracción del audio mucho más rápida.
 
+Modificando el tamaño de los vídeos
+--------------------------------------
 
+En nuestro vídeo original la resolución era 1920x818. Es decir, 1920 píxeles en horizontal y 818 en vertical. Sin embargo, ¿qué es la resolución?. En pocas palabras la resolución es una forma de indicar el tamaño del vídeo y si hablamos de dispositivos como monitores o televisiones la resolución indica cuantos puntos se pueden mostrar. Cuanto mayor sea la resolución de un monitor, mayor precisión de imagen se podrá mostrar. Por tanto, un vídeo grabado a una resolución muy alta puede verse con un nivel de detalle mucho mayor, lo que llamamos una "mejor definición".
+
+Todo esto implica lo siguiente:
+
+* Si tenemos un vídeo con una resolución muy alta (p.ej 1920x818) y lo mostramos en un monitor que como mucho puede mostrar 1024x768 entonces no solo no podremos apreciar toda la calidad del vídeo original, sino que también estamos gastando mucho espacio en disco para un archivo del cual no podremos apreciar toda su calidad.
+
+* Si tenemos un vídeo con una resolución muy baja (por ejemplo 720x576) y lo mostramos en una televisión con una resolución muy alta (3840x2160) estaremos desaprovechando la calidad de la televisión y quizá nos interese conseguir el mísmo vídeo a una resolución mayor.
+
+
+Teniendo esto en mente, es posible que nos interese modificar el tamño de nuestro vídeo original de 1920x818. Podríamos tener varios motivos:
+
+* Que este archivo sea demasiado grande para mostrarlo por ejemplo en una tablet antigua que quizá tenga una resolución pequeña.
+* Necesitamos ahorrar espacio en disco.
+* Nos da igual ver el vídeo aunque sea en una calidad ligeramente menor.
+
+Usando ``ffmpeg`` podemos modificar el tamaño del vídeo usando una herramienta llamada "filtros". El ejecutable de ``ffmpeg`` incluye una amplia variedad de filtros de vídeo y de audio que permiten hacer muchas operaciones. Para acceder a un filtro de vídeo usaremos la opción ``-vf <nombre_del_filtro> <opciones_del_filtro>``. Probemos a ejecutar esto:
+
+    ffmpeg -i Sintel.2010.1080p.mkv -vf scale=1280:720 -acodec copy Sintel.HD.mkv
+
+Pasado un rato, ``ffmpeg`` habrá modificado el tamaño del vídeo y ahora tendrá la resolución indicada. Podemos comprobarlo con esto:
+
+
+    ffmpeg -i Sintel.2010.1080p.mkv -vf scale=1280:720 -acodec copy Sintel.HD.mkv
+
+Y veremos que efectivamente la nueva resolución es de 1280x720:
+
+    Stream #0:0(eng): Video: h264 (High), yuv420p(tv, bt709/unknown/unknown, progressive), 1280x720 [SAR 540:409 DAR 960:409], 24 fps, 24 tbr, 1k tbn
+        Metadata:
+        ENCODER         : Lavc59.14.100 libx264
+        DURATION        : 00:14:48.000000000
+    Stream #0:1(eng): Audio: ac3, 48000 Hz, 5.1(side), fltp, 640 kb/s
+        Metadata:
+        title           : AC3 5.1 @ 640 Kbps
+        DURATION        : 00:14:48.032000000
+    Stream #0:2(ger): Subtitle: ass
+        Metadata:
+        ENCODER         : Lavc59.14.100 ssa
+        DURATION        : 00:10:29.800000000
+
+Si abrimos el vídeo en un ordenador normal es bastante probable que no lleguemos a notar la pérdida de calidad. Si ademas examinamos el tamaño de los archivo veremos una diferencia apreciable:
+
+    1.172.428.172   Sintel.2010.1080p.mkv
+      263.532.228   Sintel.HD.mkv
+
+Resoluciones estándar
+----------------------
+
+A día de hoy (Diciembre de 2021) hay unas cuantas resoluciones que son bastante típicas y con nombres bastante conocidos:
+
+| Nombre comercial | Significado              | Resolución |
+|------------------|--------------------------|------------|
+| UHD 8K           | Ultra High Definition 8K | 7680x4320  |
+| UHD              | Ultra High Definition    | 3840x2160  |
+| QHD              | Quad High Definition     | 2560x1440  |
+| Full HD          | Full High Definition     | 1920x1080  |
+| HD               | High Definition          | 1280x720   |
+
+Una pregunta que cabría hacerse es ¿por qué la película que estamos manejando todo el tiempo no tiene ninguna de estas resoluciones? La respuesta es que aunque en un DVD o un BluRay nos vamos a encontrar estas resoluciones, con los vídeos creados en Internet puede ocurrir que los creadores decidan usar distintas proporciones o **aspect ratios** como se conocen en inglés.
+
+Durante mucho tiempo, las TV normales tenían una proporción de 4:3. Es decir, podíamos tener una TV más grande o más pequeña pero si medíamos el ancho y el alto, la proporción siempre era de 4:3. Más adelante, las TV adoptaron una *ratio* de 16:9 para que la experiencia fuera más similar al cine (que nunca usó 4:3). Por desgracia, incluso en el cine no hay unanimidad sobre la proporción a usar. Así, podemos encontrar películas comerciales rodadas en proporciones de 2.35:1, de 2.59:1, de 1.85:1, 2.20:1 y otras. Si examinamos la resolución de la película original (1920x818) veremos que la proporción es 2.35:1 (2.3471:1 para ser exactos).
+
+Los problemas con el escalado
+--------------------------------
