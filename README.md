@@ -405,3 +405,16 @@ Esto cortará el vídeo empezando en el minuto 2 y llegando exactamente hasta el
 
 
 En ocasiones, el vídeo tendrá la duración correcta pero algunos programas de reproducción y/o televisiones informarán de una duración equivocada. Esto se debe a que algunos vídeos (como el que estamos usando de ejemplo) **incluyen información sobre capítulos y/o subtítulos** que al ser incluidos en el fichero final "confunden" al reproductor. El problema se debe a que el flujo de vídeo tiene una duración pero el flujo de subtítulos tiene una distinta. Esto puede ser difícil de resolver y el propio software indica que no hay una solución factible, ya que se depende de demasiadas variables.
+
+Unir ficheros
+---------------
+
+Igual que podemos partir un vídeo en trozos, podemos unir varios vídeos en uno. En realidad, el concepto de "unir" puede ser bastante antiguo según el usuario. El siguiente texto está tomado literalmente de la [documentación de FFMPEG sobre "unión" de vídeos](https://ffmpeg.org/faq.html#How-can-I-join-video-files_003f):
+
+>Unir puede significar:
+>
+>* Poner un fichero detrás de otro. En ``ffmpeg`` esto se llama "concatenación".
+>* Ponerlos en el mismo fichero y que el usuario elija. A esto se llama "multiplexación".
+>* En el caso de audio podría significar unir dos flujos de audio en uno solo, por ejemplo unir dos canales de audio mono en una sola pista estéreo. A esto se le llama "mezclar" (merge en el original).
+>* De nuevo en el caso de audio podría interesar hacer una "remezcla" (mix en el original). Es decir, modificar el audio de manera que por ejemplo un canal se oiga más alto que el otro.
+>* En vídeo podría interesar hacer una "superposición" de manera que ambos vídeos se vean a la vez.
