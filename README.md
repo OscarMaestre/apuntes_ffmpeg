@@ -418,3 +418,43 @@ Igual que podemos partir un vídeo en trozos, podemos unir varios vídeos en uno
 >* En el caso de audio podría significar unir dos flujos de audio en uno solo, por ejemplo unir dos canales de audio mono en una sola pista estéreo. A esto se le llama "mezclar" (merge en el original).
 >* De nuevo en el caso de audio podría interesar hacer una "remezcla" (mix en el original). Es decir, modificar el audio de manera que por ejemplo un canal se oiga más alto que el otro.
 >* En vídeo podría interesar hacer una "superposición" de manera que ambos vídeos se vean a la vez.
+
+Para hacer algunas de estas operaciones y otras más interesantes, antes habrá que introducir un concepto nuevo: los filtros.
+
+
+Filtros
+------------------
+
+En pocas palabras un filtro es una operación que puede tener **una o varias entradas** y a la vez **una o varias salidas**. El siguiente es un ejemplo de diagrama extraído de [la documentación sobre filtros de ``ffmpeg``](https://ffmpeg.org/ffmpeg-filters.html#Filtering-Introduction)
+
+                [main]
+    input --> split ---------------------> overlay --> output
+                |                             ^
+                |[tmp]                  [flip]|
+                +-----> crop --> vflip -------+
+
+
+En él se puede ver lo siguiente:
+
+1. Se toma un fichero de entrada.
+2. Se lleva a un *filtro* llamado ``split`` el cual va a producir dos salidas. Una que el usuario ha llamado "main" y otra que ha llamado "tmp".
+3. El flujo llamado "tmp" (podremos poner los nombres que queramos) se va a enviar a otros dos filtros. Uno de los filtros es ``crop`` y el otro ``flip``. Cuando terminemos con este último filtro tendremos una salida de vídeo llamada "flip".
+4. Por último, el flujo llamado "main" y el flujo llamado "flip" se unen en uno solo que se enviará a la salida.
+
+En pocas palabras, este diagrama representa como un vídeo se divide en dos mitades. La mitad de arriba no se toca, y la de abajo será un reflejo de la de arriba. Lo probamos con esto:
+
+    ffmpeg -i Sintel-segmento.mkv -vf "split [main][tmp]; [tmp] crop=iw:ih/2:0:0, vflip [flip]; [main][flip] overlay=0:H/2" Efecto-Espejo.mkv
+
+Esto cogerá nuestro segmento de vídeo recortado en la sección anterior y "construirá" un vídeo con el efecto espejo.
+
+En realidad este truco aplica varios filtros seguidos:
+
+* El filtro ``split`` coge un flujo de vídeo y lo duplica en dos flujos exactamente iguales.
+* El filtro ``crop`` que "recorta" un vídeo usando cuatro parámetros: anchura, altura, x inicial (0 es la izquierda del todo) e y (0 es arriba del todo). Así, como vemos, el flujo llamado "tmp" (que es como el vídeo inicial) se verá recortado dejando solo la mitad superior del vídeo.
+* El filtro ``vflip`` que invierte un vídeo en vertical.
+
+Así, concatenando distintos filtros se pueden conseguir efectos bastante espectaculares. Un ejemplo más simple sería este: tomemos nuestro vídeo inicial y dividámoslo en dos trozos. En uno irá la mitad superior del vídeo y en otro la mitad inferior:
+
+    ffmpeg -i Sintel-segmento.mkv -filter_complex "split [arriba][abajo]; [arriba] crop=iw:ih/2:0:0 [salida1]; [abajo] crop=iw:ih/2:0:ih/2[salida2]"  -map "[salida1]" arriba.mkv -map "[salida2]" abajo.mkv
+
+Como este vídeo tiene varias salidas *necesitamos* usar la opción** ``filter_complex``
