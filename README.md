@@ -224,7 +224,7 @@ Bien, aunque la idea era buena, aprendemos que **no todos los contenedores acept
 
     ffmpeg -i Sintel.2010.1080p.mkv -acodec copy -vcodec mpeg4 Sintel-mpeg4-ac3.avi
 
-Ahora la conversión sí se producirá y será más rápida que la realizada inicialmente (que recordemos convirtió el vídeo de h264 a mpeg4 el audio de ac3 a mp3). Si consultamos los códecs usados en el fichero final con esto:
+Ahora la conversión sí se producirá y será más rápida que la realizada inicialmente (que recordemos convirtió el vídeo de h264 a mpeg4 y el audio de ac3 a mp3). Si consultamos los códecs usados en el fichero final con esto:
 
     ffmpeg -i Sintel-mpeg4-ac3.avi
 
@@ -457,4 +457,9 @@ Así, concatenando distintos filtros se pueden conseguir efectos bastante espect
 
     ffmpeg -i Sintel-segmento.mkv -filter_complex "split [arriba][abajo]; [arriba] crop=iw:ih/2:0:0 [salida1]; [abajo] crop=iw:ih/2:0:ih/2[salida2]"  -map "[salida1]" arriba.mkv -map "[salida2]" abajo.mkv
 
-Como este vídeo tiene varias salidas *necesitamos* usar la opción** ``filter_complex``
+Como este vídeo tiene varias salidas *necesitamos* usar la opción** ``filter_complex``. El uso de todos los filtros es algo lo bastante complejo para quedar dentro de un tutorial. Aún así comentamos a continuación algunos filtros de vídeo.
+
+Filtro ``addroi``
+~~~~~~~~~~~~~~~~~~~~
+
+Este filtro destaca una región como "región de interés" ("add region of interest")
