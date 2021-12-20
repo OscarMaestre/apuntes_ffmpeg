@@ -459,7 +459,66 @@ Así, concatenando distintos filtros se pueden conseguir efectos bastante espect
 
 Como este vídeo tiene varias salidas *necesitamos* usar la opción** ``filter_complex``. El uso de todos los filtros es algo lo bastante complejo para quedar dentro de un tutorial. Aún así comentamos a continuación algunos filtros de vídeo.
 
-Filtro ``addroi``
-~~~~~~~~~~~~~~~~~~~~
+### Filtro ``crop``
 
-Este filtro destaca una región como "región de interés" ("add region of interest")
+
+
+Aunque ya lo hemos visto, este filtro permite cortar zonas del vídeo. El filtro necesita que pasemos cuatro datos:
+
+* Anchura de la región a cortar.
+* Altura de la región.
+* Coordenada X inicial. El punto x=0 está en la parte izquierda del vídeo.
+* Coordenada Y final. El punto y=0 está en la parte superior del vídeo.
+
+Así, supongamos que tenemos un vídeo de 1920x808 y que deseamos cortar el lado izquierdo del vídeo. Usaríamos algo como esto:
+    ffmpeg -i Sintel-segmento.mkv -vf "crop=960:808:0:0" -acodec copy Sintel-trozo-izquierdo.mkv
+
+### Filtros ``hflip`` y ``vflip``
+
+
+Giran el vídeo horizontal y verticalmente. En el caso del giro horizontal veremos el vídeo como si hubiera un espejo. En el caso del giro vertical, veremos el vídeo cabeza abajo. Por ejemplo, podemos hacer el giro vertical con esto:
+
+    ffmpeg -i Sintel-segmento.mkv -vf "vflip" -acodec copy Sintel-girado.mkv
+
+
+### Aplicando varios filtros a la vez
+
+Se pueden aplicar varios filtros de la manera siguiente:
+
+*  Usaremos  la opción ``-filter_complex``.
+*  Escribiremos los nombres de los filtros con punto y coma.
+*  Los filtros producen salidas y esas salidas deberán llevar un nombre que pondremos entre corchetes.
+* Las salidas de un filtro se pueden pasar al siguiente usando el nombre definido antes.
+
+
+Por ejemplo, supongamos que queremos cortar un cuadrado de vídeo de 400x400 que empiece en las coordenadas (0,0) y a la vez poner el vídeo cabeza abajo:
+
+    ffmpeg -i Sintel-segmento.mkv -vf "crop=400:400:320:3200 [trozo];[trozo] vflip" -acodec copy Sintel-cortado-y-girado.mkv
+
+Aquí vemos que:
+
+1. Se aplica primero el filtro crop, que hace el corte y el vídeo cortado se convierte en un flujo cuyo nombre es "trozo".
+2. El flujo llamado "trozo" se le pasa al filtro "vflip" que genera el vídeo final.
+
+### Filtro subtitles
+
+Este filtro permite insertar textos en el vídeo **dibujándolos encima de la imagen**. Por lo tanto **no se pueden borrar, ni deshabilitar**. 
+
+Una posibilidad es coger los propios subtítulos que nuestro vídeo de ejemplo incluye. Podemos conseguir esto con:
+
+    ffmpeg -ss 0:01:00 -to 0:01:30 -i Sintel.2010.1080p.mkv  -acodec copy -vf "subtitles=Sintel.2010.1080p.mkv" -acodec copy Sintel-segmento-con-subs-integrados.mkv
+
+Esto coge la película original y procesa solo 30 segundos de película (así tardamos menos), deja el audio como estaba (ahorrando más tiempo aún) y dibuja los subtítulos tomando la primera pista de subtítulos (que en nuestro caso inserta los subtítulos en inglés)
+
+
+Otra posibilidad es crear nuestro propio fichero de subtítulos para, por ejemplo, poner algún pequeño letrero al principio. Crearemos un pequeño fichero en el que ir indicando los subtítulos que deben aparecer y cuando deben aparecer.
+
+    1
+    00:00:05,000 --> 00:00:20,000
+    Ejemplo de edición de vídeo.
+    Subtítulo integrado
+
+En este formato se van poniendo los subtítulos.
+* Primero se indica el número de subtítulo.
+* Despues en otra línea se indica en qué momento empieza y en qué momento acaba. Ambos momentos se separan con una flecha
+* Despues podemos poner una o dos líneas que aparecerán en el vídeo en el momento indicado.
