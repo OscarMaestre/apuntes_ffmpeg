@@ -80,7 +80,7 @@ Obtención de información
 
 El archivo de vídeo que hemos descargado se llama ``Sintel.2010.1080p.mkv``. Para obtener información sobre él basta con ejecutar:
 
-    ffmpeg Sintel.2010.1080p.mkv
+    ffmpeg -i Sintel.2010.1080p.mkv
 
 
 Deberíamos ver algo como esto:
