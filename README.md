@@ -409,7 +409,7 @@ En ocasiones, el vídeo tendrá la duración correcta pero algunos programas de 
 Unir ficheros
 ---------------
 
-Igual que podemos partir un vídeo en trozos, podemos unir varios vídeos en uno. En realidad, el concepto de "unir" puede ser bastante antiguo según el usuario. El siguiente texto está tomado literalmente de la [documentación de FFMPEG sobre "unión" de vídeos](https://ffmpeg.org/faq.html#How-can-I-join-video-files_003f):
+Igual que podemos partir un vídeo en trozos, podemos unir varios vídeos en uno. En realidad, el concepto de "unir" puede ser bastante ambiguo según el usuario. El siguiente texto está tomado literalmente de la [documentación de FFMPEG sobre "unión" de vídeos](https://ffmpeg.org/faq.html#How-can-I-join-video-files_003f):
 
 >Unir puede significar:
 >
